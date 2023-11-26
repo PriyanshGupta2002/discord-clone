@@ -1,7 +1,7 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 const InvitePage = async ({ params }: { params: { inviteCode: string } }) => {
   const { inviteCode } = params;
@@ -39,8 +39,7 @@ const InvitePage = async ({ params }: { params: { inviteCode: string } }) => {
       },
     },
   });
-
-  return null;
+  return redirect("/");
 };
 
 export default InvitePage;
