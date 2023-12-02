@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Form,
   FormControl,
@@ -49,7 +49,8 @@ export const CreateChannelModal = () => {
   const router = useRouter();
 
   const params = useParams();
-  const { isOpen, onClose, type } = useModal();
+  const { isOpen, onClose, type, data } = useModal();
+  const { channelType } = data;
 
   const isModalOpen = isOpen && type === "createChannel";
 
@@ -57,14 +58,21 @@ export const CreateChannelModal = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+      type: channelType || ChannelType.TEXT,
     },
   });
-
   const handleClose = useCallback(() => {
     form.reset();
     onClose();
   }, [form, onClose]);
+
+  useEffect(() => {
+    if (channelType) {
+      form.setValue("type", channelType);
+    } else {
+      form.setValue("type", ChannelType.TEXT);
+    }
+  }, [channelType, form]);
 
   const isLoading = useMemo(() => {
     return form.formState.isLoading;
