@@ -60,9 +60,8 @@ export const EditServerModal = () => {
   }, [form, server]);
 
   const handleClose = useCallback(() => {
-    form.reset();
     onClose();
-  }, [form, onClose]);
+  }, [onClose]);
 
   const isLoading = useMemo(() => {
     return form.formState.isLoading;
