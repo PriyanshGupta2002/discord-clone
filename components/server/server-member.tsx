@@ -3,8 +3,9 @@ import { cn } from "@/lib/utils";
 import { Member, MemberRole, Profile, Server } from "@prisma/client";
 import { ShieldAlert, ShieldCheck } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import React from "react";
+import React, { useCallback } from "react";
 import UserAvatar from "../user-avatar";
+import qs from "query-string";
 interface ServerMemberProps {
   member: Member & { profile: Profile };
   server: Server;
@@ -22,8 +23,16 @@ const ServerMember: React.FC<ServerMemberProps> = ({ member, server }) => {
   const params = useParams();
   const router = useRouter();
 
+  const onClick = useCallback(() => {
+    const url = qs.stringifyUrl({
+      url: `/servers/${params?.serverId}/conversations/${member.id}`,
+    });
+    router.push(url);
+  }, [member.id, params?.serverId, router]);
+
   return (
     <button
+      onClick={onClick}
       className={cn(
         "group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1",
         params?.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700"

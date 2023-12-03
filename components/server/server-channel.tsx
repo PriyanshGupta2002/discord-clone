@@ -5,7 +5,7 @@ import { Edit, Hash, Lock, Mic, Trash, Video } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useCallback } from "react";
 import ActionToolTip from "../action-tooltip";
-import { useModal } from "@/hooks/use-modal-store";
+import { ModalType, useModal } from "@/hooks/use-modal-store";
 
 interface ServerChannelProps {
   channel: Channel;
@@ -33,6 +33,14 @@ const ServerChannel: React.FC<ServerChannelProps> = ({
     router.push(`/servers/${params?.serverId}/channels/${channel.id}`);
   }, [router, params?.serverId, channel.id]);
 
+  const onAction = useCallback(
+    (e: React.MouseEvent, action: ModalType) => {
+      e.stopPropagation();
+      onOpen(action, { server, channel });
+    },
+    [channel, onOpen, server]
+  );
+
   return (
     <button
       onClick={onClick}
@@ -56,13 +64,13 @@ const ServerChannel: React.FC<ServerChannelProps> = ({
           <ActionToolTip label="Edit">
             <Edit
               className="hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
-              onClick={() => onOpen("editChannel", { channel, server })}
+              onClick={(e) => onAction(e, "editChannel")}
             />
           </ActionToolTip>
           <ActionToolTip label="Delete">
             <Trash
               className="hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
-              onClick={() => onOpen("deletChannel", { server, channel })}
+              onClick={(e) => onAction(e, "deletChannel")}
             />
           </ActionToolTip>
         </div>
