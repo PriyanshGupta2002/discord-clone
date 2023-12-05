@@ -11,10 +11,7 @@ interface UserAvatarProps {
 const UserAvatar: React.FC<UserAvatarProps> = ({ src, className }) => {
   return (
     <Avatar>
-      <AvatarImage
-        src={src}
-        className={cn("h-7 w-7 md:h-10 md:w-10 ", className)}
-      />
+      <AvatarImage src={src} className={cn("h-10 w-10 ", className)} />
     </Avatar>
   );
 };

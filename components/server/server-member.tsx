@@ -38,7 +38,7 @@ const ServerMember: React.FC<ServerMemberProps> = ({ member, server }) => {
         params?.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700"
       )}
     >
-      <UserAvatar src={member.profile.imageUrl} className="w-8 h-8" />
+      <UserAvatar src={member.profile.imageUrl} />
       <p
         className={cn(
           "font-semibold text-sm text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition",
