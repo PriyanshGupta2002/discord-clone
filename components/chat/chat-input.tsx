@@ -6,11 +6,12 @@ import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Smile } from "lucide-react";
+import { Plus } from "lucide-react";
 import axios from "axios";
 import qs from "query-string";
 import { useModal } from "@/hooks/use-modal-store";
 import EmojiPicker from "../emoji-picker";
+import { useRouter } from "next/navigation";
 
 interface ChatInputProps {
   apiUrl: string;
@@ -33,6 +34,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ apiUrl, name, query, type }) => {
     return form.formState.isSubmitting;
   }, [form.formState.isSubmitting]);
 
+  const router = useRouter();
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
       try {
@@ -42,11 +44,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ apiUrl, name, query, type }) => {
         });
         await axios.post(url, values);
         form.reset();
+        router.refresh();
       } catch (error) {
         console.log(error);
       }
     },
-    [apiUrl, form, query]
+    [apiUrl, form, query, router]
   );
 
   const { onOpen } = useModal();
