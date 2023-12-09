@@ -71,8 +71,8 @@ export const EditChannelModal = () => {
   }, [channel, form]);
 
   const isLoading = useMemo(() => {
-    return form.formState.isLoading;
-  }, [form.formState.isLoading]);
+    return form.formState.isSubmitting;
+  }, [form.formState.isSubmitting]);
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {

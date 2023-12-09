@@ -3,6 +3,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import qs from "query-string";
 import {
   DialogContent,
   Dialog,
@@ -11,74 +12,61 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useCallback, useEffect, useMemo } from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "../ui/input";
+import { useCallback, useMemo } from "react";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Button } from "../ui/button";
 import { FileUpload } from "../file-upload";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Server name is required",
-  }),
-  imageUrl: z.string().min(1, {
+  fileUrl: z.string().min(1, {
     message: "Server image is required",
   }),
 });
-export const EditServerModal = () => {
-  const router = useRouter();
-
+export const MessageFileModal = () => {
   const {
     isOpen,
+    data: { apiUrl, query },
     onClose,
     type,
-    data: { server },
   } = useModal();
-
-  const isModalOpen = isOpen && type === "editServer";
+  const isModalOpen = isOpen && type === "messageFile";
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      imageUrl: "",
+      fileUrl: "",
     },
   });
-  useEffect(() => {
-    if (server) {
-      form.setValue("name", server.name);
-      form.setValue("imageUrl", server.imageUrl);
-    }
-  }, [form, server]);
-
-  const handleClose = useCallback(() => {
-    onClose();
-  }, [onClose]);
-
   const isLoading = useMemo(() => {
     return form.formState.isSubmitting;
   }, [form.formState.isSubmitting]);
 
+  const handleClose = useCallback(() => {
+    form.reset();
+    onClose();
+  }, [form, onClose]);
+
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
       try {
-        await axios.patch(`/api/servers/${server?.id}`, values);
+        const url = qs.stringifyUrl({
+          url: apiUrl || "",
+          query,
+        });
+        await axios.post(url, {
+          ...values,
+          content: values.fileUrl,
+        });
         form.reset();
-        handleClose();
         router.refresh();
+        handleClose();
       } catch (error) {
         console.log(error);
       }
     },
-    [form, handleClose, router, server?.id]
+    [apiUrl, form, handleClose, query, router]
   );
 
   return (
@@ -86,11 +74,10 @@ export const EditServerModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center">
-            Customize your server
+            Add an attachment
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
-            Give your server a personality with a name and an image. You can
-            always change it later.
+            Send a file as a message
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -99,12 +86,12 @@ export const EditServerModal = () => {
               <div className="flex items-center justify-center text-center">
                 <FormField
                   control={form.control}
-                  name="imageUrl"
+                  name="fileUrl"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <FileUpload
-                          endpoint="serverImage"
+                          endpoint="messageFile"
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -113,34 +100,10 @@ export const EditServerModal = () => {
                   )}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-bold text-zinc-500 dark:text-secondary/70 uppercase">
-                      Server Name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Server Name"
-                        {...field}
-                        disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
-              <Button
-                disabled={isLoading}
-                variant="primary"
-                className="disabled:cursor-not-allowed disabled:bg-indigo-300"
-              >
-                Save
+              <Button disabled={isLoading} variant="primary">
+                Send
               </Button>
             </DialogFooter>
           </form>

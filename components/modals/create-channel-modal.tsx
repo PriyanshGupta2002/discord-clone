@@ -75,8 +75,8 @@ export const CreateChannelModal = () => {
   }, [channelType, form]);
 
   const isLoading = useMemo(() => {
-    return form.formState.isLoading;
-  }, [form.formState.isLoading]);
+    return form.formState.isSubmitting;
+  }, [form.formState.isSubmitting]);
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
@@ -95,7 +95,7 @@ export const CreateChannelModal = () => {
         console.log(error);
       }
     },
-    [form, handleClose, params.serverId, router]
+    [form, handleClose, params?.serverId, router]
   );
 
   return (
