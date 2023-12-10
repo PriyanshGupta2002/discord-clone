@@ -1,4 +1,4 @@
-import { Member, Profile, Server } from "@prisma/client";
+import { Member, Message, Profile, Server } from "@prisma/client";
 
 export type ServerWithMembersWithProfile = Server & {
   members: (Member & {
@@ -15,5 +15,11 @@ export type NextResponseServerIo = NextApiResponse & {
     server: NetServer & {
       io: SocketIoServer;
     };
+  };
+};
+
+export type MessageWithMemberWithProfile = Message & {
+  member: Member & {
+    profile: Profile;
   };
 };
