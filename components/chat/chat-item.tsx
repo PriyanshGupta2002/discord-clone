@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 interface ChatItemProps {
   id: string;
@@ -82,6 +82,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const { onOpen } = useModal();
   const router = useRouter();
+  const params = useParams();
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
@@ -127,16 +128,31 @@ const ChatItem: React.FC<ChatItemProps> = ({
     [form, id, router, socketQuery, socketUrl]
   );
 
+  const memberClick = useCallback(() => {
+    if (member.id === currentMember.id) {
+      return;
+    }
+    if (params) {
+      router.push(`/servers/${params.serverId}/conversations/${member?.id}`);
+    }
+  }, [currentMember.id, member.id, params, router]);
+
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        <div
+          className="cursor-pointer hover:drop-shadow-md transition"
+          onClick={memberClick}
+        >
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm hover:underline cursor-pointer">
+              <p
+                className="font-semibold text-sm hover:underline cursor-pointer"
+                onClick={memberClick}
+              >
                 {member.profile.name}
               </p>
               <ActionToolTip label={member.role}>

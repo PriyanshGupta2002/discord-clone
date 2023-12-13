@@ -12,9 +12,9 @@ const functionHandler = async (
   }
   try {
     const profile = await currentProfilePages(req);
-    console.log("profile", profile?.id);
+
     const { fileUrl, content } = req.body;
-    console.log(fileUrl);
+
     const { serverId, channelId } = req.query;
     if (!profile) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -42,7 +42,6 @@ const functionHandler = async (
         members: true,
       },
     });
-    console.log("serverMembers", server);
 
     if (!server) {
       return res.status(404).json({ message: "Server not found" });
